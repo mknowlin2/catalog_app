@@ -217,9 +217,10 @@ def login(provider):
         user = get_user_by_email(login_session['email'])
 
         if user is None:
-            user = add_3rd_prty_user(login_session['username'],
-                                     login_session['picture'],
-                                     login_session['email'])
+            add_3rd_prty_user(login_session['username'],
+                              login_session['picture'],
+                              login_session['email'])
+            user = get_user_by_email(login_session['email'])
 
         # Generate token
         token = user.generate_auth_token()
