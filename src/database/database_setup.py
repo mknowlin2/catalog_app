@@ -20,6 +20,7 @@ secret_key = ''.join(random.choice(
 class User(Base):
     __tablename__ = 'user'
 
+    '''Columns'''
     id = Column(Integer, primary_key=True)
     username = Column(String(32))
     picture = Column(String)
@@ -49,6 +50,24 @@ class User(Base):
 
         user_id = data['id']
         return user_id
+
+
+class Category(Base):
+    __tablename__ = 'category'
+
+    '''Columns'''
+    id = Column(Integer, primary_key=True)
+    name = Column(String(32), nullable=False)
+    description = Column(String(250))
+
+    @property
+    def serialize(self):
+        # Returns object data in easily serializeable format
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description
+        }
 
 
 # insert at end of file #
