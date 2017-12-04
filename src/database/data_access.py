@@ -3,7 +3,8 @@
 # The Catalog Web application data access layer.
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database.database_setup import Base, User
+from sqlalchemy.orm.exc import NoResultFound
+from database.database_setup import Base, User, Category
 
 '''Set up database engine and database session '''
 engine = create_engine('sqlite:///catalog.db')
@@ -12,6 +13,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+# User data access methods
 def get_users():
     '''Retrieve all records from the User table'''
     users = session.query(User).all()
@@ -23,7 +25,7 @@ def get_user_by_id(id):
     try:
         user = session.query(User).filter_by(id=id).one()
         return user
-    except:
+    except NoResultFound:
         return None
 
 
@@ -32,7 +34,7 @@ def get_user_by_username(username):
     try:
         user = session.query(User).filter_by(username=username).one()
         return user
-    except:
+    except NoResultFound:
         return None
 
 
@@ -41,7 +43,7 @@ def get_user_by_email(email):
     try:
         user = session.query(User).filter_by(email=email).one()
         return user
-    except:
+    except NoResultFound:
         return None
 
 
@@ -63,3 +65,45 @@ def add_3rd_prty_user(username, picture, email):
 def verify_auth_token(token):
     '''Verify token'''
     return User.verify_auth_token(token)
+
+
+# Category data access methods
+def get_all_categories():
+    '''Retrieve all records from the Category table'''
+    try:
+        categories = session.query(Category).all()
+        return categories
+    except NoResultFound:
+        return None
+
+
+def get_category_by_id(id):
+    '''Retrieve category record based on id from the Category table'''
+    try:
+        category = session.query(Category).filter_by(id=id).one()
+        return category
+    except NoResultFound:
+        return None
+
+
+def add_category(name, description):
+    '''Add a category record to the Category table'''
+    category = Category(name=name, description=description)
+    session.add(category)
+    session.commit()
+
+
+def upd_category(id, name, description):
+    '''Update category record in the Category table'''
+    category = session.query(Category).filter_by(id=id).one()
+    category.name = name
+    category.description = description
+    session.add(category)
+    session.commit()
+
+
+def del_category(id):
+    '''Delete a category record from the Category table'''
+    category = session.query(Category).filter_by(id=id).one()
+    session.delete()
+    session.commit()
