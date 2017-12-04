@@ -8,7 +8,7 @@ from flask_httpauth import HTTPBasicAuth
 from database.data_access import get_users, get_user_by_id, \
      get_user_by_username, add_user, verify_auth_token, \
      get_user_by_email, add_3rd_prty_user, get_all_categories, \
-     add_category, get_category_by_id
+     add_category, get_category_by_id, del_category_by_id
 
 # Import oauth2 libraries
 from oauth2client.client import flow_from_clientsecrets
@@ -72,10 +72,10 @@ def get_categories():
     # Retrieve data for the categories
     categories = get_all_categories()
     return jsonify(Category=[category.serialize
-                               for category in categories])
+                   for category in categories])
 
 
-@app.route('/catelog/api/v1/category/<int:category_id>')
+@app.route('/catalog/api/v1/category/<int:category_id>')
 def get_category(category_id):
     # Retrieve data for category
     category = get_category_by_id(category_id)
@@ -90,6 +90,15 @@ def new_category():
 
     add_category(name, description)
     return jsonify({'message': 'New category added'}), 201
+
+
+@app.route('/catalog/api/v1/category/<int:category_id>/delete',
+           methods=['GET'])
+def del_category(category_id):
+    # Delete category based on category id
+    del_category_by_id(category_id)
+    return jsonify({'message': "Category with id ({}) was deleted.\
+                    ".format(category_id)}), 201
 
 
 @app.route('/catalog/user', methods=['POST'])
@@ -112,7 +121,7 @@ def new_user():
     return jsonify({'message': 'New user added'}), 201
 
 
-@app.route('/api/v1/user/<int:id>', methods=['GET'])
+@app.route('/catalog/api/v1/user/<int:id>', methods=['GET'])
 def get_user(id):
     user = get_user_by_id(id)
     if not user:
@@ -121,13 +130,13 @@ def get_user(id):
     return jsonify({'username': user.username})
 
 
-@app.route('/api/v1/resource')
+@app.route('/catalog/api/v1/resource')
 @auth.login_required
 def get_resource():
     return jsonify({'data': 'Hello, %s!' % g.user.username})
 
 
-@app.route('/oauth/<provider>', methods=['POST'])
+@app.route('/catalog/oauth/<provider>', methods=['POST'])
 def login(provider):
     # Validate state token
     if request.args.get('state') != login_session['state']:
@@ -138,9 +147,9 @@ def login(provider):
     if provider == 'internal':
         login_session['provider'] = 'internal'
         verified = verify_password(request.form['username'],
-                        request.form['password'])
+                                   request.form['password'])
 
-        if verified == True:
+        if verified is True:
             login_session['username'] = g.user.username
             login_session['picture'] = g.user.picture
             login_session['email'] = g.user.email
@@ -266,7 +275,7 @@ def login(provider):
         return jsonify({'message': 'Unrecognizied Provider'})
 
 
-@app.route('/disconnect')
+@app.route('/catalog/disconnect')
 def disconnect():
     print('login_session[provider]: {}'.format(login_session.get('provider')))
     if 'provider' in login_session:
@@ -284,7 +293,7 @@ def disconnect():
         return redirect(url_for('showCatalog'))
 
 
-@app.route('/gdisconnect')
+@app.route('/catalog/gdisconnect')
 def gdisconnect():
     print('access_token: {}'.format(login_session.get('access_token')))
 
