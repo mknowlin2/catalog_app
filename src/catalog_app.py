@@ -7,7 +7,8 @@ from flask import session as login_session
 from flask_httpauth import HTTPBasicAuth
 from database.data_access import get_users, get_user_by_id, \
      get_user_by_username, add_user, verify_auth_token, \
-     get_user_by_email, add_3rd_prty_user
+     get_user_by_email, add_3rd_prty_user, get_all_categories, \
+     add_category, get_category_by_id
 
 # Import oauth2 libraries
 from oauth2client.client import flow_from_clientsecrets
@@ -65,8 +66,35 @@ def showCatalog():
     return render_template('catalog.html')
 
 
+# Catalog API calls
+@app.route('/catalog/api/v1/categories')
+def get_categories():
+    # Retrieve data for the categories
+    categories = get_all_categories()
+    return jsonify(Category=[category.serialize
+                               for category in categories])
+
+
+@app.route('/catelog/api/v1/category/<int:category_id>')
+def get_category(category_id):
+    # Retrieve data for category
+    category = get_category_by_id(category_id)
+    return jsonify(Category=[category.serialize])
+
+
+@app.route('/catalog/api/v1/category', methods=['POST'])
+def new_category():
+    # Add a new category
+    name = request.json.get('name')
+    description = request.json.get('description')
+
+    add_category(name, description)
+    return jsonify({'message': 'New category added'}), 201
+
+
 @app.route('/catalog/user', methods=['POST'])
 def new_user():
+    # Add new user
     username = request.json.get('username')
     password = request.json.get('password')
 
