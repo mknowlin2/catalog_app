@@ -102,8 +102,8 @@ def upd_category(id, name, description):
     session.commit()
 
 
-def del_category(id):
+def del_category_by_id(id):
     '''Delete a category record from the Category table'''
     category = session.query(Category).filter_by(id=id).one()
-    session.delete()
+    session.delete(category)
     session.commit()
