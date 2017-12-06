@@ -95,15 +95,24 @@ def add_category(name, description):
 
 def upd_category(id, name, description):
     '''Update category record in the Category table'''
-    category = session.query(Category).filter_by(id=id).one()
-    category.name = name
-    category.description = description
-    session.add(category)
-    session.commit()
+    try:
+        category = session.query(Category).filter_by(id=id).one()
+        category.name = name
+        category.description = description
+        session.add(category)
+        session.commit()
+        return 'Success'
+    except NoResultFound:
+        return None
+
 
 
 def del_category_by_id(id):
     '''Delete a category record from the Category table'''
-    category = session.query(Category).filter_by(id=id).one()
-    session.delete(category)
-    session.commit()
+    try:
+        category = session.query(Category).filter_by(id=id).one()
+        session.delete(category)
+        session.commit()
+        return 'Success'
+    except NoResultFound:
+        return None
