@@ -8,7 +8,8 @@ from flask_httpauth import HTTPBasicAuth
 from database.data_access import get_users, get_user_by_id, \
      get_user_by_username, add_user, verify_auth_token, \
      get_user_by_email, add_3rd_prty_user, get_all_categories, \
-     add_category, get_category_by_id, del_category_by_id
+     add_category, get_category_by_id, del_category_by_id, \
+     upd_category
 
 # Import oauth2 libraries
 from oauth2client.client import flow_from_clientsecrets
@@ -79,7 +80,10 @@ def get_categories():
 def get_category(category_id):
     # Retrieve data for category
     category = get_category_by_id(category_id)
-    return jsonify(Category=[category.serialize])
+    if category is not None:
+      return jsonify(Category=[category.serialize])
+    else:
+      return jsonify({'message': 'No category found'}), 201
 
 
 @app.route('/catalog/api/v1/category', methods=['POST'])
@@ -92,13 +96,30 @@ def new_category():
     return jsonify({'message': 'New category added'}), 201
 
 
+@app.route('/catalog/api/v1/category/<int:category_id>/update',
+           methods=['PUT'])
+def update_category(category_id):
+    # Update parameter new user
+    name = request.json.get('name')
+    description = request.json.get('description')
+    category = upd_category(category_id, name, description)
+    if category is not None:
+      return jsonify({'message': "Category with id ({}) was updated.\
+                      ".format(category_id)}), 201
+    else:
+      return jsonify({'message': 'No category found'}), 201
+
+
 @app.route('/catalog/api/v1/category/<int:category_id>/delete',
-           methods=['GET'])
+           methods=['DELETE'])
 def del_category(category_id):
     # Delete category based on category id
-    del_category_by_id(category_id)
-    return jsonify({'message': "Category with id ({}) was deleted.\
-                    ".format(category_id)}), 201
+    category = del_category_by_id(category_id)
+    if category is not None:
+        return jsonify({'message': "Category with id ({}) was deleted.\
+                        ".format(category_id)}), 201
+    else:
+        return jsonify({'message': 'No category found.'}), 201
 
 
 @app.route('/catalog/user', methods=['POST'])
