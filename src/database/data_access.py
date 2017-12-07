@@ -4,7 +4,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
-from database.database_setup import Base, User, Category
+from database.database_setup import Base, User, Category, Item
 
 '''Set up database engine and database session '''
 engine = create_engine('sqlite:///catalog.db')
@@ -106,12 +106,63 @@ def upd_category(id, name, description):
         return None
 
 
-
 def del_category_by_id(id):
     '''Delete a category record from the Category table'''
     try:
         category = session.query(Category).filter_by(id=id).one()
         session.delete(category)
+        session.commit()
+        return 'Success'
+    except NoResultFound:
+        return None
+
+
+# Item data access methods
+def get_all_items_by_category(category_id):
+    '''Retrieve all records from the Item table for given category_id'''
+    try:
+        items = session.query(Item) \
+                       .filter_by(category_id=category_id).all()
+        return items
+    except NoResultFound:
+        return None
+
+
+def get_item_by_id(id):
+    '''Retrieve item record based on id from the Item table'''
+    try:
+        item = session.query(Item).filter_by(id=id).one()
+        return item
+    except NoResultFound:
+        return None
+
+
+def add_item(name, description, category_id, user_id):
+    '''Add a item record to the item table'''
+    item = Item(name=name, description=description,
+                category_id=category_id, creator_id=user_id)
+    session.add(item)
+    session.commit()
+
+
+def upd_item(id, name, description):
+    '''Update item record in the Item table'''
+    try:
+        item = session.query(Item).filter_by(id=id).one()
+        item.name = name
+        item.description = description
+        session.add(item)
+        session.commit()
+        return 'Success'
+    except NoResultFound:
+        return None
+
+
+def del_item_by_id(id):
+    '''Delete a item record from the Item table'''
+    try:
+        item = session.query(Item).filter_by(id=id).one()
+        session.delete(item)
         session.commit()
         return 'Success'
     except NoResultFound:

@@ -9,7 +9,8 @@ from database.data_access import get_users, get_user_by_id, \
      get_user_by_username, add_user, verify_auth_token, \
      get_user_by_email, add_3rd_prty_user, get_all_categories, \
      add_category, get_category_by_id, del_category_by_id, \
-     upd_category
+     upd_category, get_all_items_by_category, get_item_by_id, \
+     add_item, upd_item, del_item_by_id
 
 # Import oauth2 libraries
 from oauth2client.client import flow_from_clientsecrets
@@ -69,6 +70,7 @@ def showCatalog():
 
 # Catalog API calls
 @app.route('/catalog/api/v1/categories')
+@auth.login_required
 def get_categories():
     # Retrieve data for the categories
     categories = get_all_categories()
@@ -77,6 +79,7 @@ def get_categories():
 
 
 @app.route('/catalog/api/v1/category/<int:category_id>')
+@auth.login_required
 def get_category(category_id):
     # Retrieve data for category
     category = get_category_by_id(category_id)
@@ -87,6 +90,7 @@ def get_category(category_id):
 
 
 @app.route('/catalog/api/v1/category', methods=['POST'])
+@auth.login_required
 def new_category():
     # Add a new category
     name = request.json.get('name')
@@ -98,6 +102,7 @@ def new_category():
 
 @app.route('/catalog/api/v1/category/<int:category_id>/update',
            methods=['PUT'])
+@auth.login_required
 def update_category(category_id):
     # Update parameter new user
     name = request.json.get('name')
@@ -112,12 +117,75 @@ def update_category(category_id):
 
 @app.route('/catalog/api/v1/category/<int:category_id>/delete',
            methods=['DELETE'])
+@auth.login_required
 def del_category(category_id):
     # Delete category based on category id
     category = del_category_by_id(category_id)
     if category is not None:
         return jsonify({'message': "Category with id ({}) was deleted.\
                         ".format(category_id)}), 201
+    else:
+        return jsonify({'message': 'No category found.'}), 201
+
+
+# Item API calls
+@app.route('/catalog/api/v1/categories/<int:category_id>/items')
+@auth.login_required
+def get_items_by_category(category_id):
+    # Retrieve items for the categories
+    items = get_all_items_by_category(category_id)
+    return jsonify(Item=[item.serialize
+                   for item in items])
+
+
+@app.route('/catalog/api/v1/categories/<int:category_id>/items/<int:item_id>')
+@auth.login_required
+def get_item(category_id, item_id):
+    # Retrieve data for item
+    item = get_item_by_id(item_id)
+    if item is not None:
+      return jsonify(Item=[item.serialize])
+    else:
+      return jsonify({'message': 'No category found'}), 201
+
+
+@app.route('/catalog/api/v1/categories/<int:category_id>/items',
+           methods=['POST'])
+@auth.login_required
+def new_item(category_id):
+    # Add a new category
+    name = request.json.get('name')
+    description = request.json.get('description')
+    user_id = request.json.get('user_id')
+
+    add_item(name, description, category_id, user_id)
+    return jsonify({'message': 'New item added'}), 201
+
+
+@app.route('/catalog/api/v1/categories/<int:category_id>/items/<int:item_id>/update',
+           methods=['PUT'])
+@auth.login_required
+def update_item(category_id, item_id):
+    # Update parameter new user
+    name = request.json.get('name')
+    description = request.json.get('description')
+    item = upd_item(item_id, name, description)
+    if item is not None:
+      return jsonify({'message': "Item with id ({}) was updated.\
+                      ".format(category_id)}), 201
+    else:
+      return jsonify({'message': 'No category found'}), 201
+
+
+@app.route('/catalog/api/v1/categories/<int:category_id>/items/<int:item_id>/delete',
+           methods=['DELETE'])
+@auth.login_required
+def del_item(category_id, item_id):
+    # Delete category based on category id
+    item = del_item_by_id(item_id)
+    if item is not None:
+        return jsonify({'message': "Item with id ({}) was deleted.\
+                        ".format(item_id)}), 201
     else:
         return jsonify({'message': 'No category found.'}), 201
 
@@ -172,14 +240,10 @@ def login(provider):
 
         if verified is True:
             login_session['username'] = g.user.username
+            login_session['user_id'] = g.user.id
             login_session['picture'] = g.user.picture
             login_session['email'] = g.user.email
             login_session['user_token'] = g.user.generate_auth_token()
-
-            print('username: {}'.format(login_session['username']))
-            print('picture: {}'.format(login_session['picture']))
-            print('email: {}'.format(login_session['email']))
-            print('user_token: {}'.format(login_session['user_token']))
 
             return redirect(url_for('showCatalog'))
         else:
@@ -283,11 +347,7 @@ def login(provider):
         # Generate token
         token = user.generate_auth_token()
         login_session['user_token'] = token
-
-        print('username: {}'.format(login_session['username']))
-        print('picture: {}'.format(login_session['picture']))
-        print('email: {}'.format(login_session['email']))
-        print('user_token: {}'.format(login_session['user_token']))
+        login_session['user_id'] = user.id
 
         # Send back token to the client
         # return jsonify({'token': token.decode('ascii')})

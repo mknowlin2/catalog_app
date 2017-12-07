@@ -70,6 +70,30 @@ class Category(Base):
         }
 
 
+class Item(Base):
+    __tablename__ = 'item'
+
+    '''Columns'''
+    id = Column(Integer, primary_key=True)
+    name = Column(String(32), nullable=False)
+    description = Column(String(250))
+    category_id = Column(Integer, ForeignKey('category.id'))
+    category = relationship(Category)
+    creator_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
+
+    @property
+    def serialize(self):
+        # Returns object data in easily serializeable format
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'category_id': self.category_id,
+            'creator_id': self.creator_id
+        }
+
+
 # insert at end of file #
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.create_all(engine)
