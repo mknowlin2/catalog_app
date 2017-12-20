@@ -65,12 +65,34 @@ def get_auth_token():
 
 @app.route('/catalog', methods=['GET'])
 def showCatalog():
+    # Retrieve all categories
+    category_result = get_categories()
+    data = json.loads(category_result.data.decode('utf-8'))
+    categories = data['Category']
+
+    # Retrieve first category's items
+    category = categories[0]
+    items_result = get_items_by_category(category['id'])
+    data = json.loads(items_result.data.decode('utf-8'))
+    items = data['Item']
+
+    return render_template('catalog.html', categories=categories,
+                           items=items)
+
+
+@app.route('/catalog/<string:category_name>/items', methods=['GET'])
+def showCategory(category_name):
+    return render_template('catalog.html')
+
+
+@app.route('/catalog/<int:category_id>/items/<string:item_name>',
+           methods=['GET'])
+def showItem(category_id, item_name):
     return render_template('catalog.html')
 
 
 # Catalog API calls
 @app.route('/catalog/api/v1/categories')
-@auth.login_required
 def get_categories():
     # Retrieve data for the categories
     categories = get_all_categories()
@@ -130,7 +152,6 @@ def del_category(category_id):
 
 # Item API calls
 @app.route('/catalog/api/v1/categories/<int:category_id>/items')
-@auth.login_required
 def get_items_by_category(category_id):
     # Retrieve items for the categories
     items = get_all_items_by_category(category_id)
