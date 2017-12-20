@@ -41,10 +41,6 @@ div.logs { border: 1px solid #999;
   margin-bottom: 0;
 }
 
-.stats h3 {
-  font-family: "Abril Fatface", cursive;
-}
-
 [class*="col-"] {
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -52,4 +48,17 @@ div.logs { border: 1px solid #999;
 
 #logo {
   height: 80px;
+}
+
+#categories {
+  background-color: #f1f1f1;
+  height: 100%;
+}
+
+#items {
+
+}
+
+#items h2 {
+  font-family: "Abril Fatface", cursive;
 }
