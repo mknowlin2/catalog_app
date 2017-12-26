@@ -1,53 +1,48 @@
 {% extends "main.html" %}
 {% block content %}
 {% include "header.html" %}
-<div class="row banner main">
-  <div class="col-md-1"></div>
-  <div class="col-md-11 padding-none">
-    <h1>Catalog Main Page</h1>
-  </div>
-</div>
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<div class="flash">
-  {% for message in messages %}
-  <div class="row">
-    <div class="col">
-      <li><strong>{{message}}</strong></li>
+<div class="row">
+  <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
+    <h1 class="navbar-brand">Categories</h1>
+    <ul class="nav nav-pills flex-column">
+      {% for category in categories %}
+      <li class="nav-item">
+        <a class="nav-link active" href="{{url_for('showCategory', category_name = category.name)}}">
+          {{category.name}} <span class="sr-only">(current)</span></a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+  <main role="main" class="col-sm-9 ml-sm-auto col-md-10 pt-3">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash">
+      {% for message in messages %}
+      <div class="row">
+        <div class="col">
+          <li><strong>{{message}}</strong></li>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
-{% endwith %}
-<div class="row padding-top padding-bottom">
-  <div id="categories" class="col-3">
-    <h2>Categories</h2>
-    {% for category in categories %}
-    <a href = "{{url_for('showCategory', category_name = category.name)}}">
-      <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10 category-list">
-          <h3>{{category.name}}</h3>
-        </div>
-        <div class="col-md-1"></div>
-      </div>
-    </a>
-    {% endfor %}
-  </div>
-  <div id="items" class="col-9">
-    <h2>Items</h2>
-    {% for item in items %}
-    <a href = "{{url_for('showItem', category_id = item.category_id, item_name = item.name)}}">
-      <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10 item-list">
-          <h3>{{item.name}}</h3>
-        </div>
-        <div class="col-md-1"></div>
-      </div>
-    </a>
-    {% endfor %}
-  </div>
+    {% endif %}
+    {% endwith %}
+    <h1>Items</h1>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>
+              <a href = "{{url_for('showItem', category_id = item.category_id, item_name = item.name)}}">
+                 {{item.name}}
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+ </main>
 </div>
 {% endblock %}
