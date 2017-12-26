@@ -1,5 +1,5 @@
 body {
-  position: relative;
+  padding-top: 3.5rem;
 }
 
 hr {
@@ -13,9 +13,46 @@ main h2 {
   font-family: "Abril Fatface", cursive;
 }
 
+/* Add a gray background color and some padding to the footer */
+footer {
+  background-color: #f2f2f2;
+  padding: 25px;
+}
+
 div.logs { border: 1px solid #999;
            padding: 10px 10px;
            margin: 10px 20%; }
+
+/* Remove the jumbotron's default bottom margin */
+.jumbotron {
+  margin-bottom: 0;
+}
+
+/* Remove the navbar's default rounded borders and increase the bottom margin */
+.navbar {
+  margin-bottom: 50px;
+  border-radius: 0;
+}
+
+.fixed-top {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+}
+
+.sidebar {
+  position: fixed;
+  top: 51px;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 20px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-right: 1px solid #eee;
+}
 
 .logo {
   width: 20%;
@@ -33,7 +70,12 @@ div.logs { border: 1px solid #999;
 }
 
 .row {
-  margin-bottom: 1rem;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
 }
 
 .row .row {
