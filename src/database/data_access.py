@@ -85,6 +85,14 @@ def get_category_by_id(id):
     except NoResultFound:
         return None
 
+def get_category_by_name(name):
+    '''Retrieve category record based on name from the Category table'''
+    try:
+        category = session.query(Category).filter_by(name=name).one()
+        return category
+    except NoResultFound:
+        return None
+
 
 def add_category(name, description):
     '''Add a category record to the Category table'''
@@ -132,6 +140,14 @@ def get_item_by_id(id):
     '''Retrieve item record based on id from the Item table'''
     try:
         item = session.query(Item).filter_by(id=id).one()
+        return item
+    except NoResultFound:
+        return None
+
+def get_item_by_name(name):
+    '''Retrieve item record based on name from the Item table'''
+    try:
+        item = session.query(Item).filter_by(name=name).one()
         return item
     except NoResultFound:
         return None

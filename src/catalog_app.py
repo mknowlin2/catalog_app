@@ -8,9 +8,9 @@ from flask_httpauth import HTTPBasicAuth
 from database.data_access import get_users, get_user_by_id, \
      get_user_by_username, add_user, verify_auth_token, \
      get_user_by_email, add_3rd_prty_user, get_all_categories, \
-     add_category, get_category_by_id, del_category_by_id, \
-     upd_category, get_all_items_by_category, get_item_by_id, \
-     add_item, upd_item, del_item_by_id
+     add_category, get_category_by_id, get_category_by_name, \
+     del_category_by_id, upd_category, get_all_items_by_category, \
+     get_item_by_id, get_item_by_name, add_item, upd_item, del_item_by_id
 
 # Import oauth2 libraries
 from oauth2client.client import flow_from_clientsecrets
@@ -72,9 +72,11 @@ def showCatalog():
 
     # Retrieve first category's items
     category = categories[0]
+    print(category)
     items_result = get_items_by_category(category['id'])
     data = json.loads(items_result.data.decode('utf-8'))
     items = data['Item']
+    print(items)
 
     return render_template('catalog.html', categories=categories,
                            items=items)
@@ -82,12 +84,23 @@ def showCatalog():
 
 @app.route('/catalog/<string:category_name>/items', methods=['GET'])
 def showCategory(category_name):
-    return render_template('catalog.html')
+    # Retrieve category
+    category_result = get_category_by_nm(category_name)
+    data = json.loads(category_result.data.decode('utf-8'))
+    category = data['Category']
+
+    # Retrieve category items
+    items_result = get_items_by_category(category[0]['id'])
+    data = json.loads(items_result.data.decode('utf-8'))
+    items = data['Item']
+
+    return render_template('catalog.html', categories=category,
+                           items=items)
 
 
-@app.route('/catalog/<int:category_id>/items/<string:item_name>',
+@app.route('/catalog/<string:category_name>/items/<string:item_name>',
            methods=['GET'])
-def showItem(category_id, item_name):
+def showItem(category_name, item_name):
     return render_template('catalog.html')
 
 
@@ -101,10 +114,19 @@ def get_categories():
 
 
 @app.route('/catalog/api/v1/category/<int:category_id>')
-@auth.login_required
 def get_category(category_id):
     # Retrieve data for category
     category = get_category_by_id(category_id)
+    if category is not None:
+      return jsonify(Category=[category.serialize])
+    else:
+      return jsonify({'message': 'No category found'}), 201
+
+
+@app.route('/catalog/api/v1/category/<int:category_name>')
+def get_category_by_nm(category_name):
+    # Retrieve data for category
+    category = get_category_by_name(category_name)
     if category is not None:
       return jsonify(Category=[category.serialize])
     else:
@@ -265,6 +287,7 @@ def login(provider):
             login_session['picture'] = g.user.picture
             login_session['email'] = g.user.email
             login_session['user_token'] = g.user.generate_auth_token()
+            print (login_session['user_token'])
 
             return redirect(url_for('showCatalog'))
         else:
@@ -368,6 +391,7 @@ def login(provider):
         # Generate token
         token = user.generate_auth_token()
         login_session['user_token'] = token
+        print (login_session['user_token'])
         login_session['user_id'] = user.id
 
         # Send back token to the client
