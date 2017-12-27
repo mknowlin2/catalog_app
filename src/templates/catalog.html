@@ -7,7 +7,7 @@
     <ul class="nav nav-pills flex-column">
       {% for category in categories %}
       <li class="nav-item">
-        <a class="nav-link active" href="{{url_for('showCategory', category_name = category.name)}}">
+        <a class="nav-link" href="{{url_for('showCategory', category_name = category.name)}}">
           {{category.name}} <span class="sr-only">(current)</span></a>
       </li>
       {% endfor %}
@@ -30,11 +30,10 @@
     <h1>Items</h1>
     <div class="table-responsive">
       <table class="table table-striped">
-        <tbody>
           {% for item in items %}
           <tr>
             <td>
-              <a href = "{{url_for('showItem', category_id = item.category_id, item_name = item.name)}}">
+              <a href = "{{url_for('showItem', category_name = categories[0]['name'], item_name = item.name)}}">
                  {{item.name}}
               </a>
             </td>
