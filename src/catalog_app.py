@@ -101,7 +101,18 @@ def showCategory(category_name):
 @app.route('/catalog/<string:category_name>/items/<string:item_name>',
            methods=['GET'])
 def showItem(category_name, item_name):
-    return render_template('catalog.html')
+    # Retrieve category
+    category_result = get_category_by_nm(category_name)
+    data = json.loads(category_result.data.decode('utf-8'))
+    category = data['Category']
+
+    # Retrieve item
+    item_result = get_item_by_nm(category_name, item_name)
+    data = json.loads(item_result.data.decode('utf-8'))
+    item = data['Item']
+
+    return render_template('catalog.html', categories=category,
+                           item=item)
 
 
 # Catalog API calls
@@ -182,10 +193,19 @@ def get_items_by_category(category_id):
 
 
 @app.route('/catalog/api/v1/categories/<int:category_id>/items/<int:item_id>')
-@auth.login_required
 def get_item(category_id, item_id):
     # Retrieve data for item
     item = get_item_by_id(item_id)
+    if item is not None:
+      return jsonify(Item=[item.serialize])
+    else:
+      return jsonify({'message': 'No category found'}), 201
+
+
+@app.route('/catalog/api/v1/categories/<string:category_name>/items/<string:item_name>')
+def get_item_by_nm(category_name, item_name):
+    # Retrieve data for item
+    item = get_item_by_name(item_name)
     if item is not None:
       return jsonify(Item=[item.serialize])
     else:
@@ -408,6 +428,7 @@ def disconnect():
         if login_session['provider'] == 'google':
             gdisconnect()
         del login_session['username']
+        del login_session['user_id']
         del login_session['email']
         del login_session['picture']
         del login_session['user_token']
