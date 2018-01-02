@@ -3,7 +3,16 @@
 {% include "header.html" %}
 <div class="row">
   <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
-    <h1 class="navbar-brand">Categories</h1>
+    <div class="row">
+      <div class="col">
+        <h1 class="navbar-brand">Categories</h1>
+      </div>
+      {% if 'username' in session %}
+      <div class="col">
+        <a href="{{url_for('newCategory')}}" class="btn btn-outline-success" role="button">Add</a>
+      </div>
+      {% endif %}
+    </div>
     <ul class="nav nav-pills flex-column">
       {% for category in categories %}
       <li class="nav-item">
@@ -32,9 +41,6 @@
       <div class="col-4">
         <h1>Items</h1>
       </div>
-      <div class="col-2">
-
-      </div>
     </div>
     <div class="table-responsive">
       <table class="table table-striped">
@@ -56,25 +62,48 @@
           {% endfor %}
         </tbody>
       </table>
-      {% else %}
-      <h1>{{item[0]['name']}}</h1>
-      <div class="row">
-        <div class="col">
-           <strong>Description:</strong> {{item[0]['description']}}
-        </div>
-      </div>
-      {% if session['user_id'] == item[0]['creator_id'] %}
-      <div class="row">
-        <div class="col-2">
-          <button class="btn-outline-primary" type=submit>Edit</button>
-        </div>
-        <div class="col-2">
-          <button class="btn-outline-danger" type=submit>Delete</button>
-        </div>
-      </div>
-      {% endif %}
-      {% endif %}
     </div>
+    {% else %}
+    {% if item %}
+    <h1>{{item[0]['name']}}</h1>
+    <div class="row">
+      <div class="col">
+        <strong>Description:</strong> {{item[0]['description']}}
+      </div>
+    </div>
+    {% if session['user_id'] == item[0]['creator_id'] %}
+    <div class="row">
+      <div class="col-2">
+        <button class="btn-outline-primary" type=submit>Edit</button>
+      </div>
+      <div class="col-2">
+        <button class="btn-outline-danger" type=submit>Delete</button>
+      </div>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="row">
+      <div class="col-4">
+        <h1>Items</h1>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <tbody>
+          {% if 'username' in session %}
+          <tr>
+            <td>
+              <button class="btn-outline-success" type=submit>Add</button>
+            </td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td>No items found.</td>
+          </tr>
+        </tbody>
+      </table>
+    {% endif %}
+    {% endif %}
  </main>
 </div>
 {% endblock %}

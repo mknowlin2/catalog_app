@@ -98,6 +98,22 @@ def showCategory(category_name):
                            items=items)
 
 
+#Create a new category
+@app.route('/catalog/new/', methods=['GET','POST'])
+def newCategory():
+    if 'username' not in login_session:
+        return redirect('/catalog/login')
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        # Create new category
+        add_category(name, description)
+        flash('New Category %s Successfully Created' % name)
+        return redirect(url_for('showCatalog'))
+    else:
+        return render_template('newCategory.html')
+
+
 @app.route('/catalog/<string:category_name>/items/<string:item_name>',
            methods=['GET'])
 def showItem(category_name, item_name):

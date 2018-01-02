@@ -1,0 +1,49 @@
+
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+	<div class="row divider green">
+		<div class="col-md-12"></div>
+	</div>
+	<div class="row banner menu">
+		<div class="col-md-11 col-md-offset-1 padding-none">
+			<h1>New Category</h1>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6 col-md-offset-1 padding-top">
+			<form id="category" action="#" method = "post">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-3">
+							<label for="name">Name:</label>
+						</div>
+						<div class="row">
+							<input type ="text" class="form-control" maxlength="32" name="name">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-3">
+							<label for="name">Description:</label>
+						</div>
+						<div class="row">
+							<textarea form="category" class="form-control"
+							          name="description" rows="3" cols="50">
+							</textarea>
+						</div>
+					</div>
+					<div class="padding-bottom"></div>
+					<div class="row">
+						<div class="col-2">
+							<button type="submit" class="btn btn-outline-success" id="submit" type="submit">
+							<span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Create</button>
+						</div>
+						<div class="col-2">
+							<a href="{{url_for('showCatalog')}}" class="btn btn-outline-danger" role="button">Cancel</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}
