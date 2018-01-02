@@ -158,6 +158,36 @@ def newItem(category_name):
         return render_template('newItem.html')
 
 
+# Edit item
+@app.route('/catalog/<string:category_name>/<string:item_name>/edit', methods=['GET','POST'])
+def editItem(category_name, item_name):
+    if 'username' not in login_session:
+        return redirect('/catalog/login')
+
+    # Retrieve item
+    result = get_item_by_nm(category_name, item_name)
+    data = json.loads(result.data.decode('utf-8'))
+    item = data['Item']
+    item_id = item[0]['id']
+    name = item[0]['name']
+    description = item[0]['description']
+
+    if request.method == 'POST':
+        user_id = login_session['user_id']
+
+        if request.form['name']:
+            name = request.form['name']
+        if request.form['description']:
+            description = request.form['description']
+
+        # Get item
+        upd_item(item_id, name, description)
+        flash('Successfully Updated %s' % name)
+        return redirect(url_for('showCategory', category_name=category_name))
+    else:
+        return render_template('editItem.html', category_name=category_name, item=item)
+
+
 # Catalog API calls
 @app.route('/catalog/api/v1/categories')
 def get_categories():

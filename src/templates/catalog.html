@@ -79,7 +79,8 @@
     {% if session['user_id'] == item[0]['creator_id'] %}
     <div class="row">
       <div class="col-2">
-        <a href="#" class="btn btn-outline-primary" role="button">
+        <a href="{{url_for('editItem', category_name = categories[0]['name'], item_name = item[0]['name'])}}"
+           class="btn btn-outline-primary" role="button">
           <i class="fa fa-pencil-square" aria-hidden="true"></i> Edit</a>
       </div>
       <div class="col-2">
