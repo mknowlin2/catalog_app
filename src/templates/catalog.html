@@ -13,6 +13,7 @@
       </div>
       {% endif %}
     </div>
+    {% if categories %}
     <ul class="nav nav-pills flex-column">
       {% for category in categories %}
       <li class="nav-item">
@@ -21,6 +22,7 @@
       </li>
       {% endfor %}
     </ul>
+    {% endif %}
   </nav>
   <main role="main" class="col-sm-9 ml-sm-auto col-md-10 pt-3">
     {% with messages = get_flashed_messages() %}

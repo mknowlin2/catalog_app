@@ -70,13 +70,16 @@ def showCatalog():
     data = json.loads(category_result.data.decode('utf-8'))
     categories = data['Category']
 
-    # Retrieve first category's items
-    category = categories[0]
-    print(category)
-    items_result = get_items_by_category(category['id'])
-    data = json.loads(items_result.data.decode('utf-8'))
-    items = data['Item']
-    print(items)
+    print(categories)
+    if categories:
+        # Retrieve first category's items
+        category = categories[0]
+        items_result = get_items_by_category(category['id'])
+        data = json.loads(items_result.data.decode('utf-8'))
+        items = data['Item']
+    else:
+        # Pass an empty items list
+        items = []
 
     return render_template('catalog.html', categories=categories,
                            items=items)
