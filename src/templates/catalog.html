@@ -50,7 +50,8 @@
           {% if 'username' in session %}
           <tr>
             <td>
-              <button class="btn-outline-success" type=submit>Add</button>
+              <a href="{{url_for('newItem', category_name = categories[0]['name'])}}"
+                 class="btn btn-outline-success" role="button">Add</a>
             </td>
           </tr>
           {% endif %}
@@ -76,10 +77,10 @@
     {% if session['user_id'] == item[0]['creator_id'] %}
     <div class="row">
       <div class="col-2">
-        <button class="btn-outline-primary" type=submit>Edit</button>
+        <a href="#" class="btn btn-outline-primary" role="button">Edit</a>
       </div>
       <div class="col-2">
-        <button class="btn-outline-danger" type=submit>Delete</button>
+        <a href="#" class="btn btn-outline-danger" role="button">Delete</a>
       </div>
     </div>
     {% endif %}
@@ -95,7 +96,8 @@
           {% if 'username' in session %}
           <tr>
             <td>
-              <button class="btn-outline-success" type=submit>Add</button>
+              <a href="{{url_for('newItem', category_name = categories[0]['name'])}}"
+                 class="btn btn-outline-success" role="button">Add</a>
             </td>
           </tr>
           {% endif %}

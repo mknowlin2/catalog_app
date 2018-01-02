@@ -134,6 +134,30 @@ def showItem(category_name, item_name):
                            item=item)
 
 
+#Create a new item
+@app.route('/catalog/<string:category_name>/new/', methods=['GET','POST'])
+def newItem(category_name):
+    if 'username' not in login_session:
+        return redirect('/catalog/login')
+    if request.method == 'POST':
+        user_id = login_session['user_id']
+        name = request.form['name']
+        description = request.form['description']
+
+        # Retrieve category
+        category_result = get_category_by_nm(category_name)
+        data = json.loads(category_result.data.decode('utf-8'))
+        category = data['Category']
+        category_id = category[0]['id']
+
+        # Create new item
+        add_item(name, description, category_id, user_id)
+        flash('New Item %s Successfully Created' % name)
+        return redirect(url_for('showCategory', category_name=category_name))
+    else:
+        return render_template('newItem.html')
+
+
 # Catalog API calls
 @app.route('/catalog/api/v1/categories')
 def get_categories():
