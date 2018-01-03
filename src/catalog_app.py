@@ -62,7 +62,7 @@ def get_auth_token():
     token = g.user.generate_auth_token()
     return jsonify({'token': token.decode('ascii')})
 
-
+@app.route('/', methods=['GET'])
 @app.route('/catalog', methods=['GET'])
 def showCatalog():
     # Retrieve all categories
@@ -117,7 +117,7 @@ def newCategory():
         return render_template('newCategory.html')
 
 
-@app.route('/catalog/<string:category_name>/items/<string:item_name>',
+@app.route('/catalog/<string:category_name>/<string:item_name>',
            methods=['GET'])
 def showItem(category_name, item_name):
     # Retrieve category
@@ -172,6 +172,9 @@ def editItem(category_name, item_name):
     name = item[0]['name']
     description = item[0]['description']
 
+    if login_session['user_id'] != item[0]['creator_id']:
+        flash('You are not authorized to edit this %s.' % name)
+        return redirect(url_for('showCategory', category_name=category_name))
     if request.method == 'POST':
         user_id = login_session['user_id']
 
@@ -186,6 +189,31 @@ def editItem(category_name, item_name):
         return redirect(url_for('showCategory', category_name=category_name))
     else:
         return render_template('editItem.html', category_name=category_name, item=item)
+
+
+#Delete item
+@app.route('/catalog/<string:category_name>/<string:item_name>/delete',
+           methods = ['GET','POST'])
+def deleteItem(category_name, item_name):
+    if 'username' not in login_session:
+         return redirect('/catalog/login')
+
+    # Retrieve item
+    result = get_item_by_nm(category_name, item_name)
+    data = json.loads(result.data.decode('utf-8'))
+    item = data['Item']
+    item_id = item[0]['id']
+    name = item[0]['name']
+
+    if login_session['user_id'] != item[0]['creator_id']:
+        flash('You are not authorized to delete this %s.' % name)
+        return redirect(url_for('showCategory', category_name=category_name))
+    if request.method == 'POST':
+        del_item_by_id(item_id)
+        flash('Item Successfully Deleted')
+        return redirect(url_for('showCategory', category_name=category_name))
+    else:
+        return render_template('deleteitem.html', item = item)
 
 
 # Catalog API calls
@@ -317,7 +345,7 @@ def update_item(category_id, item_id):
            methods=['DELETE'])
 @auth.login_required
 def del_item(category_id, item_id):
-    # Delete category based on category id
+    # Delete item based on item id
     item = del_item_by_id(item_id)
     if item is not None:
         return jsonify({'message': "Item with id ({}) was deleted.\

@@ -1,0 +1,37 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<div class="row divider green">
+	<div class="col-md-12"></div>
+</div>
+<div class="row banner menu">
+	<div class="col-md-11 col-md-offset-1 padding-none">
+		<h1>Delete Item</h1>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-6 col-md-offset-1 padding-top">
+		<form id="item" action="#" method = "post">
+			<div class="form-group">
+				<div class="row">
+					<div class="col">
+						Are you sure you want to delete {{item[0]['name']}}?
+					</div>
+				</div>
+				<div class="padding-bottom"></div>
+				<div class="row">
+					<div class="col-2">
+						<button id="submit" type="submit"
+						        class="btn btn-outline-primary delete">
+										<i class="fa fa-minus-square" aria-hidden="true"></i> Delete</button>
+					</div>
+					<div class="col-2">
+						<a href="{{url_for('showItem', category_name=category_name, item_name=item[0]['name'])}}"
+						   class="btn btn-outline-danger" role="button">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}
