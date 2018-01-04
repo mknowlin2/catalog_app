@@ -222,7 +222,8 @@ def deleteItem(category_name, item_name):
         return redirect(url_for('showCategory',
                                 category_name=category_name))
     else:
-        return render_template('deleteitem.html', item=item)
+        return render_template('deleteitem.html',
+                               category_name=category_name, item=item)
 
 
 # Catalog API calls
