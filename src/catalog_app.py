@@ -62,6 +62,7 @@ def get_auth_token():
     token = g.user.generate_auth_token()
     return jsonify({'token': token.decode('ascii')})
 
+
 @app.route('/', methods=['GET'])
 @app.route('/catalog', methods=['GET'])
 def showCatalog():
@@ -101,8 +102,8 @@ def showCategory(category_name):
                            items=items)
 
 
-#Create a new category
-@app.route('/catalog/new/', methods=['GET','POST'])
+# Create a new category
+@app.route('/catalog/new/', methods=['GET', 'POST'])
 def newCategory():
     if 'username' not in login_session:
         return redirect('/catalog/login')
@@ -134,8 +135,9 @@ def showItem(category_name, item_name):
                            item=item)
 
 
-#Create a new item
-@app.route('/catalog/<string:category_name>/new/', methods=['GET','POST'])
+# Create a new item
+@app.route('/catalog/<string:category_name>/new/',
+           methods=['GET', 'POST'])
 def newItem(category_name):
     if 'username' not in login_session:
         return redirect('/catalog/login')
@@ -153,13 +155,15 @@ def newItem(category_name):
         # Create new item
         add_item(name, description, category_id, user_id)
         flash('New Item %s Successfully Created' % name)
-        return redirect(url_for('showCategory', category_name=category_name))
+        return redirect(url_for('showCategory',
+                                category_name=category_name))
     else:
         return render_template('newItem.html')
 
 
 # Edit item
-@app.route('/catalog/<string:category_name>/<string:item_name>/edit', methods=['GET','POST'])
+@app.route('/catalog/<string:category_name>/<string:item_name>/edit',
+           methods=['GET', 'POST'])
 def editItem(category_name, item_name):
     if 'username' not in login_session:
         return redirect('/catalog/login')
@@ -174,7 +178,8 @@ def editItem(category_name, item_name):
 
     if login_session['user_id'] != item[0]['creator_id']:
         flash('You are not authorized to edit this %s.' % name)
-        return redirect(url_for('showCategory', category_name=category_name))
+        return redirect(url_for('showCategory',
+                                category_name=category_name))
     if request.method == 'POST':
         user_id = login_session['user_id']
 
@@ -186,17 +191,19 @@ def editItem(category_name, item_name):
         # Get item
         upd_item(item_id, name, description)
         flash('Successfully Updated %s' % name)
-        return redirect(url_for('showCategory', category_name=category_name))
+        return redirect(url_for('showCategory',
+                                category_name=category_name))
     else:
-        return render_template('editItem.html', category_name=category_name, item=item)
+        return render_template('editItem.html',
+                               category_name=category_name, item=item)
 
 
-#Delete item
+# Delete item
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete',
-           methods = ['GET','POST'])
+           methods=['GET', 'POST'])
 def deleteItem(category_name, item_name):
     if 'username' not in login_session:
-         return redirect('/catalog/login')
+        return redirect('/catalog/login')
 
     # Retrieve item
     result = get_item_by_nm(category_name, item_name)
@@ -207,13 +214,15 @@ def deleteItem(category_name, item_name):
 
     if login_session['user_id'] != item[0]['creator_id']:
         flash('You are not authorized to delete this %s.' % name)
-        return redirect(url_for('showCategory', category_name=category_name))
+        return redirect(url_for('showCategory',
+                                category_name=category_name))
     if request.method == 'POST':
         del_item_by_id(item_id)
         flash('Item Successfully Deleted')
-        return redirect(url_for('showCategory', category_name=category_name))
+        return redirect(url_for('showCategory',
+                                category_name=category_name))
     else:
-        return render_template('deleteitem.html', item = item)
+        return render_template('deleteitem.html', item=item)
 
 
 # Catalog API calls
@@ -230,9 +239,9 @@ def get_category(category_id):
     # Retrieve data for category
     category = get_category_by_id(category_id)
     if category is not None:
-      return jsonify(Category=[category.serialize])
+        return jsonify(Category=[category.serialize])
     else:
-      return jsonify({'message': 'No category found'}), 201
+        return jsonify({'message': 'No category found'}), 201
 
 
 @app.route('/catalog/api/v1/category/<int:category_name>')
@@ -240,9 +249,9 @@ def get_category_by_nm(category_name):
     # Retrieve data for category
     category = get_category_by_name(category_name)
     if category is not None:
-      return jsonify(Category=[category.serialize])
+        return jsonify(Category=[category.serialize])
     else:
-      return jsonify({'message': 'No category found'}), 201
+        return jsonify({'message': 'No category found'}), 201
 
 
 @app.route('/catalog/api/v1/category', methods=['POST'])
@@ -265,10 +274,10 @@ def update_category(category_id):
     description = request.json.get('description')
     category = upd_category(category_id, name, description)
     if category is not None:
-      return jsonify({'message': "Category with id ({}) was updated.\
-                      ".format(category_id)}), 201
+        return jsonify({'message': "Category with id ({}) was updated.\
+                       ".format(category_id)}), 201
     else:
-      return jsonify({'message': 'No category found'}), 201
+        return jsonify({'message': 'No category found'}), 201
 
 
 @app.route('/catalog/api/v1/category/<int:category_id>/delete',
@@ -298,19 +307,20 @@ def get_item(category_id, item_id):
     # Retrieve data for item
     item = get_item_by_id(item_id)
     if item is not None:
-      return jsonify(Item=[item.serialize])
+        return jsonify(Item=[item.serialize])
     else:
-      return jsonify({'message': 'No category found'}), 201
+        return jsonify({'message': 'No category found'}), 201
 
 
-@app.route('/catalog/api/v1/categories/<string:category_name>/items/<string:item_name>')
+@app.route('/catalog/api/v1/categories/ \
+           <string:category_name>/items/<string:item_name>')
 def get_item_by_nm(category_name, item_name):
     # Retrieve data for item
     item = get_item_by_name(item_name)
     if item is not None:
-      return jsonify(Item=[item.serialize])
+        return jsonify(Item=[item.serialize])
     else:
-      return jsonify({'message': 'No category found'}), 201
+        return jsonify({'message': 'No category found'}), 201
 
 
 @app.route('/catalog/api/v1/categories/<int:category_id>/items',
@@ -326,7 +336,8 @@ def new_item(category_id):
     return jsonify({'message': 'New item added'}), 201
 
 
-@app.route('/catalog/api/v1/categories/<int:category_id>/items/<int:item_id>/update',
+@app.route('/catalog/api/v1/categories/ \
+           <int:category_id>/items/<int:item_id>/update',
            methods=['PUT'])
 @auth.login_required
 def update_item(category_id, item_id):
@@ -335,13 +346,14 @@ def update_item(category_id, item_id):
     description = request.json.get('description')
     item = upd_item(item_id, name, description)
     if item is not None:
-      return jsonify({'message': "Item with id ({}) was updated.\
-                      ".format(category_id)}), 201
+        return jsonify({'message': "Item with id ({}) was updated.\
+                       ".format(category_id)}), 201
     else:
-      return jsonify({'message': 'No category found'}), 201
+        return jsonify({'message': 'No category found'}), 201
 
 
-@app.route('/catalog/api/v1/categories/<int:category_id>/items/<int:item_id>/delete',
+@app.route('/catalog/api/v1/categories/ \
+           <int:category_id>/items/<int:item_id>/delete',
            methods=['DELETE'])
 @auth.login_required
 def del_item(category_id, item_id):
@@ -408,7 +420,7 @@ def login(provider):
             login_session['picture'] = g.user.picture
             login_session['email'] = g.user.email
             login_session['user_token'] = g.user.generate_auth_token()
-            print (login_session['user_token'])
+            print(login_session['user_token'])
 
             return redirect(url_for('showCatalog'))
         else:
@@ -512,7 +524,7 @@ def login(provider):
         # Generate token
         token = user.generate_auth_token()
         login_session['user_token'] = token
-        print (login_session['user_token'])
+        print(login_session['user_token'])
         login_session['user_id'] = user.id
 
         # Send back token to the client

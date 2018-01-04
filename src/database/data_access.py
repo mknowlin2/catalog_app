@@ -85,6 +85,7 @@ def get_category_by_id(id):
     except NoResultFound:
         return None
 
+
 def get_category_by_name(name):
     '''Retrieve category record based on name from the Category table'''
     try:
@@ -143,6 +144,7 @@ def get_item_by_id(id):
         return item
     except NoResultFound:
         return None
+
 
 def get_item_by_name(name):
     '''Retrieve item record based on name from the Item table'''
